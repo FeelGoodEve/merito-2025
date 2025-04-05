@@ -25,3 +25,4 @@ Wywołanie migracji (podstawowej)
 ```shell
 python manage.py migrate
 ```
+
