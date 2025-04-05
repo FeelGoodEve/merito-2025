@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+# from django.contrib.auth.decorators import login_required
 from app_scinet.models import Article
 def index_page(request):
 
@@ -7,7 +8,7 @@ def index_page(request):
 
     return render(request, 'main.html', context)
 
-
+# @login_required
 def article_page(request, article_id):
 
     article = get_object_or_404(Article, id=article_id)
