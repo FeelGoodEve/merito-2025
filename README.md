@@ -25,8 +25,12 @@ pip install -r requirements.txt
    - wklejenie zawartości do pliku .env
    - uzupełnienie od dane lokalne (Twoje dane konfiguracyjne)
 
-Wywołanie migracji (podstawowej)
+6 .Wywołanie migracji (podstawowej)
 ```shell
 python manage.py migrate
 ```
-
+7. Postawienie frontu (Musisz mieć zainstalowanego  [Node](https://nodejs.org/en) z Chocolatey - czyli zaznaczyć checkbox podczas instalacji)
+Wykonaj komendę 
+```sh
+npm i
+```
