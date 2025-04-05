@@ -15,3 +15,8 @@ def article_page(request, article_id):
     context = {'article': article}
 
     return render(request, 'article.html', context)
+
+def user_register_page(request):
+    return render(request, 'user_register_form.html', {
+        'is_grid_cols_1': True
+    })
