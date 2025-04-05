@@ -29,7 +29,13 @@ pip install -r requirements.txt
 ```shell
 python manage.py migrate
 ```
-7. Postawienie frontu (Musisz mieć zainstalowanego  [Node](https://nodejs.org/en) z Chocolatey - czyli zaznaczyć checkbox podczas instalacji)
+
+7. Wgranie przykładowych danych do projektu
+```sh
+python manage.py seed_articles
+```
+
+8. Postawienie frontu (Musisz mieć zainstalowanego  [Node](https://nodejs.org/en) z Chocolatey - czyli zaznaczyć checkbox podczas instalacji)
 Wykonaj komendę 
 ```sh
 npm i
