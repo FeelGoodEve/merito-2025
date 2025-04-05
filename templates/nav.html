@@ -57,10 +57,16 @@
                     </svg>
                 </button>
             </div>
+            <script>
+                document.getElementById('menu-toggle').addEventListener('click', function() {
+                    var menu = document.getElementById('mobile-menu');
+                    menu.classList.toggle('hidden');
+                 });
+            </script>
         </div>
     </div>
     <!-- Menu mobilne widoczne tylko na małych ekranach poniżej md-->
-    <div id="mobile-menu" class="md:hidden hidden px-4 pb-4 space-y-2">
+    <div id="mobile-menu" class="md:hidden hidden flex flex-col px-4 pb-4 space-y-2">
         <a href="#" class="text-gray-700 hover:text-blue-600 text-sm font-medium">Strona główna</a>
         <a href="#" class="text-gray-700 hover:text-blue-600 text-sm font-medium">Publikacje</a>
         <a href="#" class="text-gray-700 hover:text-blue-600 text-sm font-medium">Znajomi</a>
