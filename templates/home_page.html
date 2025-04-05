@@ -1,11 +1,34 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-    <title>Home</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-</head>
-<body>
-<h1>Home</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/tailwind.css' %}">
+    <title>Nawigacja</title>
+  </head>
+  <body class="bg-white">
+    <!-- Pasek nawigacyjny -->
+    <nav class="bg-green-600 w-full">
+      <!-- Ograniczenie maksymalnej szerokości do 1920px i wycentrowanie -->
+      <div class="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Flexbox: poziome rozmieszczenie elementów -->
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo SCINET po lewej -->
+          <div class="flex-shrink-0 text-white text-xl font-bold">
+            scinet
+          </div>
+
+          <!-- Linki nawigacyjne pośrodku -->
+          <div class="md:flex md:space-x-8 md:justify-center md:w-full">
+            <a href="#" class="text-white hover:text-gray-200 transition">Strona Główna</a>
+            <a href="#" class="text-white hover:text-gray-200 transition">O nas</a>
+            <a href="#" class="text-white hover:text-gray-200 transition">Usługi</a>
+            <a href="#" class="text-white hover:text-gray-200 transition">Portfolio</a>
+            <a href="#" class="text-white hover:text-gray-200 transition">Kontakt</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </body>
 </html>
