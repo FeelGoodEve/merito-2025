@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from app_scinet.views.home_page_view import home_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home_page, name='scinet:home'),
 ]
