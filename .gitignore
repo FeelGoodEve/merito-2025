@@ -2,3 +2,7 @@
 .venv
 .idea
 /node_modules/
+/static/css/tailwind.css
+static/css/tailwind.css
+__pycache__/
+*.pyc
