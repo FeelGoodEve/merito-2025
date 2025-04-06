@@ -1,21 +1,27 @@
 <div class="bg-blue-900">
-    <div class="mx-auto flex h-10 max-w-7xl items-center justify-end px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center space-x-4 text-sm font-medium text-white">
+  <div class="mx-auto flex h-10 max-w-7xl items-center justify-end px-4 sm:px-6 lg:px-8">
+    {% if user.is_authenticated %}
+      <div class="flex items-center space-x-4 text-sm font-medium text-white">
+        <span>Witaj, {{ user.first_name|default:user.username }} ({{ user.email }})</span>
 
-            <a href="#" class="hover:text-gray-100">Zaloguj się</a>
-            <span class="h-4 w-px bg-white/50"></span>
-            <a href="#" class="flex items-center space-x-1 hover:text-gray-100">
-                <span>Nie masz jeszcze konta?</span>
-                <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14"></path>
-                    <path d="m12 5 7 7-7 7"></path>
-                </svg>
-                <span>Zarejestruj się</span>
-            </a>
-
-        </div>
-    </div>
+          <button type="submit" class="hover:text-gray-100">Wyloguj się</button>
+      </div>
+    {% else %}
+      <div class="flex items-center space-x-4 text-sm font-medium text-white">
+        <a href="{% url 'login' %}" class="hover:text-gray-100">Zaloguj się</a>
+        <span class="h-4 w-px bg-white/50"></span>
+        <a href="#" class="flex items-center space-x-1 hover:text-gray-100">
+          <span>Nie masz jeszcze konta?</span>
+          <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14"></path>
+            <path d="m12 5 7 7-7 7"></path>
+          </svg>
+          <span>Zarejestruj się</span>
+        </a>
+      </div>
+    {% endif %}
+  </div>
 </div>
 <!-- Pasek z nawigacją - główne menu -->
 <nav class="bg-blue-50 border-b border-blue-200">
