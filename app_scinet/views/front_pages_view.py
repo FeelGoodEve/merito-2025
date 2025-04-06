@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
 # from django.contrib.auth.decorators import login_required
 from app_scinet.models import Article
+from app_scinet.forms import CustomUserRegistrationForm
 def index_page(request):
 
     articles = Article.objects.all()
@@ -37,12 +38,19 @@ def login_page(request):
 
     return render(request, "login.html")
 
-
 def user_register_page(request):
-    return render(request, 'user_register_form.html', {
-        'is_grid_cols_1': True
-    })
 
+    if request.method == 'POST':
+        form = CustomUserRegistrationForm(request.POST)
+        if form.is_valid():
+            user =  form.save(commit=False)
+            user.save()
+            return redirect('home')
+    else:
+        form = CustomUserRegistrationForm()
+
+    context = {'form': form}
+    return render(request, 'user_register_form.html', context)
 
 def logout_page(request):
     logout(request)
