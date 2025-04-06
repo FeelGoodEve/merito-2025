@@ -39,13 +39,15 @@ def login_page(request):
     return render(request, "login.html")
 
 def user_register_page(request):
+
     if request.method == 'POST':
         form = CustomUserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('index_page')  # lub inna strona np. 'home'
+            user =  form.save(commit=False)
+            user.save()
+            return redirect('home')
     else:
         form = CustomUserRegistrationForm()
-    return render(request, 'user_register_form.html', {'form': form}, {
-        'is_grid_cols_1': True
-    })
+
+    context = {'form': form}
+    return render(request, 'user_register_form.html', context)
