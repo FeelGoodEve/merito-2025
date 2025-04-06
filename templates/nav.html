@@ -3,8 +3,9 @@
     {% if user.is_authenticated %}
       <div class="flex items-center space-x-4 text-sm font-medium text-white">
         <span>Witaj, {{ user.first_name|default:user.username }} ({{ user.email }})</span>
-
+        <a href="{% url 'logout' %}" class="flex items-center space-x-1 hover:text-gray-100">
           <button type="submit" class="hover:text-gray-100">Wyloguj się</button>
+        </a>
       </div>
     {% else %}
       <div class="flex items-center space-x-4 text-sm font-medium text-white">

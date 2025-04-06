@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
 # from django.contrib.auth.decorators import login_required
 from app_scinet.models import Article
@@ -37,7 +37,13 @@ def login_page(request):
 
     return render(request, "login.html")
 
+
 def user_register_page(request):
     return render(request, 'user_register_form.html', {
         'is_grid_cols_1': True
     })
+
+
+def logout_page(request):
+    logout(request)
+    return redirect("home")
