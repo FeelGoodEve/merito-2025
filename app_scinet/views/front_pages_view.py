@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
-# from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
+from app_scinet.decorators import group_required
 from app_scinet.models import Article
 from app_scinet.forms import CustomUserRegistrationForm
 def index_page(request):
@@ -11,8 +12,17 @@ def index_page(request):
 
     return render(request, 'main.html', context)
 
-# @login_required
 def article_page(request, article_id):
+
+    article = get_object_or_404(Article, id=article_id)
+    context = {'article': article}
+
+    return render(request, 'article.html', context)
+
+# PoC
+@login_required
+@group_required('grupa1')
+def article_page_p(request, article_id):
 
     article = get_object_or_404(Article, id=article_id)
     context = {'article': article}
