@@ -40,3 +40,12 @@ Wykonaj komendę
 ```sh
 npm i
 ```
+
+
+# Uwaga   
+Po każdym pobraniu zmian należy wykonać komendę przebudowania arkuszy styli z tailwindCSS.   
+Poniższe polecenie przebuduje tailwindCSS oraz uruchomi obserwowanie zmian na plikach i będzie działało do czasu ctrl + c lub wyłączenia środowiska IDE
+
+```sh
+npm run tailwind:dev
+```
