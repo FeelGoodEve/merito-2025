@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from functools import wraps
 
+# Dekorator do sprawdzania przynależności do grupy oraz statusu zalogowania (użycie w front_pages_view.py)
 def group_required(group_name):
     def decorator(view_func):
         @wraps(view_func)
