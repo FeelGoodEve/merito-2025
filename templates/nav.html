@@ -29,10 +29,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
+            <!-- Klikalne logo, które prowadzi na stronę główną -->
             <div class="flex items-center space-x-2">
-                <span class="text-2xl font-bold tracking-tight text-blue-600">
+                <!-- Używamy linku z reverse routingiem Django -->
+                <a href="{% url 'home' %}" class="text-2xl font-bold tracking-tight text-blue-600 hover:text-blue-800">
                     SCI<span class="text-gray-800">net</span>
-                </span>
+                </a>
             </div>
             <!-- Nawigacja główna -->
             <div class="hidden md:flex space-x-8">
