@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from app_scinet.decorators import group_required
-from app_scinet.models import Article
+from app_scinet.models import Article, Interaction
 from app_scinet.forms import CustomUserRegistrationForm
 
 
@@ -93,5 +93,5 @@ def like_article(request, article_id):
             type='like'
         )
 
-    # Po dodaniu lajka przekierowujemy użytkownika na stronę z arykułem
-    return redirect('article', article_id=article.id)
+    # Po dodaniu lajka przekierowujemy użytkownika z powrotem na stronę główną
+    return redirect('home')
