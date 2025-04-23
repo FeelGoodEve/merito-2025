@@ -24,6 +24,12 @@ class Article(models.Model):
         blank=True,
         null=True,
     )
+    image = models.ImageField(
+        upload_to='uploads/articles/images/',
+        blank=True,
+        null=True,
+    )
+
     views = models.PositiveIntegerField(
         default=0,
     )

@@ -1,0 +1,74 @@
+{% extends 'basic_template.html' %}
+{% load static %}
+{% block content %}
+    <!-- Feed -->
+    <section class="lg:col-span-2 space-y-6">
+        <!-- Post -->
+        <div class="w-full bg-white p-6 rounded-lg shadow space-y-6">
+
+            <!-- Nagłówek -->
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-800">Dodaj nowy artykuł</h2>
+                <p class="text-sm text-gray-500">Wypełnij formularz, aby opublikować treść.</p>
+            </div>
+
+            <!-- Formularz -->
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Tytuł -->
+                <div>
+                    <label for="{{ form.title.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700">Tytuł</label>
+                    {{ form.title }}
+                </div>
+
+                <!-- Treść -->
+                <div>
+                    <label for="{{ form.content.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700">Treść</label>
+                    {{ form.content }}
+                </div>
+
+                <!-- Plik -->
+                <div>
+                    <label for="{{ form.file.id_for_label }}" class="block text-sm font-medium text-gray-700">Plik
+                        (opcjonalnie)</label>
+                    {{ form.file }}
+                </div>
+
+                <!-- Obrazek -->
+                <div>
+                    <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-700">Obrazek
+                        (opcjonalnie)</label>
+                    {{ form.image }}
+
+                </div>
+
+                <!-- Przycisk -->
+                <div>
+                    <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-md py-2 px-4 text-sm">
+                        Zapisz artykuł
+                    </button>
+                </div>
+            </form>
+
+            <!-- Powrót -->
+            <div class="text-center">
+                <a href="{% url 'home' %}" class="text-sm text-blue-600 hover:underline">
+                    Wróć do listy artykułów</a>
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}
+{% block sidebar %}
+    <!-- Sidebar -->
+    {% include "common/_sidebar.html" %}
+
+{% endblock %}
+
+
+
