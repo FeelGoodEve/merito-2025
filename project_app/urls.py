@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from app_scinet.views.front_pages_view import index_page, article_page, article_page_p, login_page, user_register_page, \
-    logout_page, like_article
+    logout_page, like_article, unlike_article, comment_article
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -12,6 +12,7 @@ urlpatterns = [
     path('login/', login_page, name='login'),
     path('logout/', logout_page, name='logout'),
     path('like/<int:article_id>/', like_article, name='like_article'),
-
+    path('unlike/<int:article_id>/', unlike_article, name='unlike_article'),
+    path('comment/<int:article_id>/', comment_article, name='comment_article'),
 
 ]

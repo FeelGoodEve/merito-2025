@@ -112,11 +112,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'pl'
+TIME_ZONE = 'Europe/Warsaw'
 USE_I18N = True
 
 USE_TZ = True
@@ -142,4 +139,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Ścieżka do przechowywania wgranych plików
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Ścieżka logowania dla @login_required
+LOGIN_URL = '/login/'
 

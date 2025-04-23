@@ -1,0 +1,22 @@
+<div class="bg-white p-4 rounded-md shadow mt-6">
+  {% if user.is_authenticated %}
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">Dodaj komentarz</h2>
+
+    <form method="post" action="{% url 'comment_article' article.id %}" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        {{ comment_form.content}}
+      </div>
+      <div>
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-md py-2 px-4 text-sm">
+          Dodaj komentarz
+        </button>
+      </div>
+    </form>
+  {% else %}
+    <p class="text-sm text-gray-600">
+      <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Zaloguj się</a>, aby dodać komentarz.
+    </p>
+  {% endif %}
+</div>
