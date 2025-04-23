@@ -24,7 +24,30 @@
             </div>
         </div>
 
+        <div class="bg-white p-4 rounded-md shadow mt-6">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Komentarze</h2>
+            {% for comment in article.interactions.all|dictsortreversed:"created_at" %}
+                {% if comment.type == 'comment' %}
+                    <div class="divide-y divide-gray-200">
+                    <!-- Komentarz 1 -->
+                    <div class="flex items-start gap-4 py-4">
+                        <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80"
+                             alt="" class="w-10 h-10 rounded-full bg-gray-100">
+                        <div>
+                            <h3 class="font-medium text-gray-900">{{ comment.user.username }}</h3>
+                            <span class="border inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">{{ comment.created_at|date:"j E Y" }}</span>
+                            <div class="mt-4 space-y-6 text-base text-gray-600 italic">
+                                {{ comment.content }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+            {% include "_comment_form.html" %}
+        </div>
     </section>
+
 
     <!-- Sidebar -->
     <aside class="space-y-6">
