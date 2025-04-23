@@ -3,13 +3,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from app_scinet.decorators import group_required
+from app_scinet.forms.ArticleForm import ArticleForm
 from app_scinet.forms.CommentForm import CommentForm
 from app_scinet.models import Article, Interaction
 from app_scinet.forms import CustomUserRegistrationForm
 
 
 def index_page(request):
-    articles = Article.objects.all()
+    articles = Article.objects.all().order_by('-created_at')
 
     # Przechodzimy przez wszystkie artykuły pobrane wcześniej z bazy danych
     for article in articles:
@@ -49,9 +50,10 @@ def index_page(request):
 
 def article_page(request, article_id):
     article = get_object_or_404(Article, id=article_id)
+    comments = Interaction.objects.filter(article=article, type='comment').order_by('created_at')
     comment_form = CommentForm()
 
-    context = {'article': article, 'comment_form': comment_form}
+    context = {'article': article, 'comment_form': comment_form, 'comments': comments}
 
 
     return render(request, 'article.html', context)
@@ -174,3 +176,18 @@ def comment_article(request, article_id):
         )
     # Po dodaniu komentarza przekierowujemy użytkownika z powrotem na stronę artykułu
     return redirect('article', article_id=article_id)
+
+
+@login_required
+def add_article(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, request.FILES)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.user = request.user  # przypisz autora
+            article.save()
+            return redirect('home')  # możesz zmienić np. na redirect('article', article_id=article.id)
+    else:
+        form = ArticleForm()
+
+    return render(request, 'add_article.html', {'form': form})
