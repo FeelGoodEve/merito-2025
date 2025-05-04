@@ -1,12 +1,16 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from app_scinet.decorators import group_required
 from app_scinet.forms.ArticleForm import ArticleForm
 from app_scinet.forms.CommentForm import CommentForm
+from app_scinet.forms.UserProfileFrom import UserProfileForm
 from app_scinet.models import Article, Interaction
 from app_scinet.forms import CustomUserRegistrationForm
+from app_scinet.models.UserProfileModel import UserProfile
 
 
 def index_page(request):
@@ -94,6 +98,8 @@ def user_register_page(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.save()
+            # Ręczne tworzenie profilu
+            UserProfile.objects.create(user=user)
             return redirect('home')
     else:
         form = CustomUserRegistrationForm()
@@ -184,10 +190,113 @@ def add_article(request):
         form = ArticleForm(request.POST, request.FILES)
         if form.is_valid():
             article = form.save(commit=False)
-            article.user = request.user  # przypisz autora
+            article.user = request.user  # przypisywanie autora
             article.save()
-            return redirect('home')  # możesz zmienić np. na redirect('article', article_id=article.id)
+            return redirect('my_articles')
     else:
         form = ArticleForm()
 
     return render(request, 'add_article.html', {'form': form})
+
+
+@login_required
+def edit_article(request, article_id):
+    # Pobierz artykuł lub zwróć 404 jeśli nie istnieje lub nie należy do użytkownika
+    article = get_object_or_404(Article, id=article_id, user=request.user)
+
+    if request.method == 'POST':
+        # Formularz z danymi POST i plikami, z przypisaniem do istniejącego artykułu
+        form = ArticleForm(request.POST, request.FILES, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('my_articles')
+    else:
+        # W przypadku GET — pokaż formularz z aktualnymi danymi artykułu
+        form = ArticleForm(instance=article)
+
+    return render(request, 'edit_article.html', {'form': form, 'article': article})
+
+@login_required
+def my_articles(request):
+    sort_field = request.GET.get('sort', 'created_at')
+    sort_dir = request.GET.get('dir', 'desc')
+
+    # ustal kierunek sortowania
+    order_prefix = '-' if sort_dir == 'desc' else ''
+    sort_expression = f"{order_prefix}{sort_field}"
+
+    # pobierz tylko artykuły tego użytkownika
+    articles = Article.objects.filter(user=request.user)\
+        .annotate(
+            like_count=Count('interactions', filter=Q(interactions__type='like')),
+            comment_count=Count('interactions', filter=Q(interactions__type='comment'))
+        ).order_by(sort_expression)
+
+    # paginacja
+    paginator = Paginator(articles, 5)  # 5 na stronę
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'sort': sort_field,
+        'dir': sort_dir
+    }
+    return render(request, 'my_articles.html', context)
+
+
+
+@login_required
+def delete_article(request, article_id):
+    # Pobierz artykuł lub zwróć 404 jeśli nie istnieje lub nie należy do użytkownika
+    article = get_object_or_404(Article, id=article_id, user=request.user)
+
+    if request.method == 'POST':
+        # Po potwierdzeniu usunięcia
+        article.delete()
+        messages.success(request, 'Artykuł został usunięty.')
+        return redirect('my_articles')
+
+    # GET — pokaż stronę potwierdzającą usunięcie
+    return render(request, 'delete_article.html', {'article': article})
+
+
+@login_required  # tylko zalogowany użytkownik może uzyskać dostęp do tego widoku.
+def edit_profile(request):
+    # Pobiera profil użytkownika lub tworzy go, jeśli jeszcze nie istnieje.
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        # Tworzymy formularz na podstawie danych przesłanych metodą POST oraz przesłanych plików (avatar).
+        # Ustawienie `instance=profile` powoduje, że formularz będzie edytował istniejący obiekt profilu,
+        # zamiast tworzyć nowy
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            # Jeśli formularz jest poprawny, zapisuje dane do bazy.
+            form.save()
+            # Dodaje wiadomość sukcesu do systemu wiadomości Django.
+            messages.success(request, "Profil został zaktualizowany.")
+            # Przekierowuje z powrotem do formularza edycji (odświeżenie).
+            return redirect('edit_profile')
+    else:
+        # Tworzy formularz z aktualnymi danymi profilu użytkownika.
+        form = UserProfileForm(instance=profile)
+
+    # Renderuje szablon z formularzem.
+    return render(request, 'edit_profile.html', {'form': form})
+
+
+@login_required
+def profile_view(request):
+    # Pobieramy aktualnie zalogowanego użytkownika z obiektu `request`.
+    user = request.user
+
+    # Próbujemy pobrać profil użytkownika na podstawie relacji `user`.
+    # Jeśli profil nie istnieje, Django zwróci błąd 404 (strona nie istnieje).
+    profile = get_object_or_404(UserProfile, user=user)
+
+    # Renderujemy szablon `profile.html`, przekazując do niego dane użytkownika i jego profil.
+    return render(request, 'profile.html', {
+        'user': user,
+        'profile': profile,
+    })

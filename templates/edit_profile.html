@@ -1,0 +1,129 @@
+{#{% extends 'basic_template.html' %}#}
+{#{% load static %}#}
+{#{% block content %}#}
+{#<section class="lg:col-span-2 space-y-6">#}
+{#    <div class="bg-white p-4 rounded-md shadow">#}
+{#        <h2 class="text-xl font-bold mb-4">Edytuj profil</h2>#}
+{##}
+{#        <form method="post" enctype="multipart/form-data" class="space-y-4">#}
+{#            {% csrf_token %}#}
+{#            {% if messages %}#}
+{#                <ul class="text-green-600">#}
+{#                    {% for message in messages %}#}
+{#                        <li>{{ message }}</li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            {% endif %}#}
+{##}
+{#            {% for field in form %}#}
+{#                <div>#}
+{#                    <label class="block font-medium text-gray-700">{{ field.label_tag }}</label>#}
+{#                    {{ field }}#}
+{#                    {% if field.errors %}#}
+{#                        <p class="text-sm text-red-600">{{ field.errors.0 }}</p>#}
+{#                    {% endif %}#}
+{#                </div>#}
+{#            {% endfor %}#}
+{##}
+{#            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">#}
+{#                Zapisz zmiany#}
+{#            </button>#}
+{#        </form>#}
+{#    </div>#}
+{#</section>#}
+{#{% endblock %}#}
+{##}
+{#{% block sidebar %}#}
+{#    {% include "common/_sidebar.html" %}#}
+{#{% endblock %}#}
+{% extends 'basic_template.html' %}
+{% load static %}
+
+{% block content %}
+    <section class="lg:col-span-2 space-y-6">
+        <div class="bg-white p-4 rounded-md shadow">
+            <h2 class="text-xl font-bold mb-4">Edytuj profil</h2>
+
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+
+                {% if messages %}
+                    <ul class="text-green-600">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {# Avatar z podglądem #}
+                <div>
+                    <label for="{{ form.avatar.id_for_label }}" class="block font-medium text-gray-700">
+                        {{ form.avatar.label }}
+                    </label>
+                    {{ form.avatar }}
+                    {% if form.avatar.value %}
+                        <div class="mt-2">
+                            <img id="avatarPreview"
+                                 src="{{ form.instance.avatar.url }}"
+                                 alt="Podgląd avataru"
+                                 class="h-32 rounded-lg"/>
+                        </div>
+                    {% else %}
+                        <div class="mt-2">
+                            <img id="avatarPreview" src="#" alt="Podgląd avataru"
+                                 class="h-32 rounded-lg hidden"/>
+                        </div>
+                    {% endif %}
+                    {% if form.avatar.errors %}
+                        <p class="text-sm text-red-600">{{ form.avatar.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                {# Pozostałe pola formularza #}
+                {% for field in form %}
+                    {% if field.name != 'avatar' %}
+                        <div>
+                            <label for="{{ field.id_for_label }}" class="block font-medium text-gray-700">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <p class="text-sm text-red-600">{{ field.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                    Zapisz zmiany
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const input = document.getElementById("id_avatar");
+            const preview = document.getElementById("avatarPreview");
+
+            if (input) {
+                input.addEventListener("change", function (event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            preview.src = e.target.result;
+                            preview.classList.remove("hidden");
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block sidebar %}
+    {% include "common/_sidebar.html" %}
+{% endblock %}
+
