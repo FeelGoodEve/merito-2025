@@ -218,30 +218,34 @@ def edit_article(request, article_id):
 
 @login_required
 def my_articles(request):
+    # Pobierz parametr sortowania z URL (np. ?sort=title) lub domyślnie 'created_at'
     sort_field = request.GET.get('sort', 'created_at')
+    # Pobierz kierunek sortowania ('asc' lub 'desc') lub domyślnie malejąco ('desc')
     sort_dir = request.GET.get('dir', 'desc')
 
-    # ustal kierunek sortowania
+    # Na podstawie kierunku sortowania ustaw prefix do sortowania (Django używa '-' dla sortowania malejącego)
     order_prefix = '-' if sort_dir == 'desc' else ''
     sort_expression = f"{order_prefix}{sort_field}"
 
-    # pobierz tylko artykuły tego użytkownika
+    # Filtruj artykuły tak, aby pobrać tylko te przypisane do aktualnie zalogowanego użytkownika
+    # oraz dodaj adnotacje zliczające lajki i komentarze – to działa wydajnie na poziomie bazy danych
     articles = Article.objects.filter(user=request.user)\
         .annotate(
             like_count=Count('interactions', filter=Q(interactions__type='like')),
             comment_count=Count('interactions', filter=Q(interactions__type='comment'))
-        ).order_by(sort_expression)
+        ).order_by(sort_expression)  # Sortowanie dynamiczne
 
-    # paginacja
-    paginator = Paginator(articles, 5)  # 5 na stronę
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # Inicjalizacja paginacji – po 5 artykułów na stronę
+    paginator = Paginator(articles, 5)
+    page_number = request.GET.get('page')  # aktualny numer strony z URL
+    page_obj = paginator.get_page(page_number)  # pobranie obiektów strony
 
     context = {
-        'page_obj': page_obj,
-        'sort': sort_field,
-        'dir': sort_dir
+        'page_obj': page_obj,  # lista artykułów na daną stronę
+        'sort': sort_field,    # przekazanie pola sortowania do szablonu
+        'dir': sort_dir        # przekazanie kierunku sortowania do szablonu
     }
+
     return render(request, 'my_articles.html', context)
 
 

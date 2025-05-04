@@ -1,15 +1,18 @@
-
 {% extends 'basic_template.html' %}
 {% load static %}
 
 {% block content %}
+<!-- Główna sekcja z artykułami -->
 <div class="col-span-2 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+
+    <!-- Nagłówek sekcji z tytułem i przyciskiem dodawania -->
     <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
             <h1 class="text-base font-semibold text-gray-900">Twoje artykuły</h1>
             <p class="mt-2 text-sm text-gray-700">Lista artykułów stworzonych przez Ciebie.</p>
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <!-- Przycisk dodania nowego artykułu -->
             <a href="{% url 'add_article' %}"
                class="block rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500">
                 Dodaj artykuł
@@ -17,30 +20,31 @@
         </div>
     </div>
 
+    <!-- Tabela z listą artykułów -->
     <div class="mt-8 flow-root">
         <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                 <table class="min-w-full divide-y divide-gray-300">
                     <thead>
                     <tr>
-                        <!-- Tytuł -->
+                        <!-- Kolumna: Tytuł z możliwością sortowania -->
                         <th class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">
                             <a href="?sort=title&dir={% if sort == 'title' and dir == 'asc' %}desc{% else %}asc{% endif %}"
                                class="inline-flex items-center gap-1 hover:underline">
                                 Tytuł
                                 {% if sort == 'title' %}
                                     {% if dir == 'asc' %}
-                                        <span>↑</span>
+                                        <span>↑</span>  {# Sortowanie rosnące #}
                                     {% else %}
-                                        <span>↓</span>
+                                        <span>↓</span>  {# Sortowanie malejące #}
                                     {% endif %}
                                 {% else %}
-                                    <span class="text-gray-300">↑</span>
+                                    <span class="text-gray-300">↑</span>  {# Domyślna ikona sortowania (niesortowana) #}
                                 {% endif %}
                             </a>
                         </th>
 
-                        <!-- Data -->
+                        <!-- Kolumna: Data utworzenia z sortowaniem -->
                         <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                             <a href="?sort=created_at&dir={% if sort == 'created_at' and dir == 'asc' %}desc{% else %}asc{% endif %}"
                                class="inline-flex items-center gap-1 hover:underline">
@@ -57,28 +61,35 @@
                             </a>
                         </th>
 
-                        <!-- Pozostałe -->
+                        <!-- Pozostałe kolumny (bez sortowania) -->
                         <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Lajki</th>
                         <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Komentarze</th>
                         <th class="py-3.5 px-3 text-right text-sm font-semibold text-gray-900">Akcje</th>
                     </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
+
+                    <!-- Iteracja po artykułach -->
                     {% for article in page_obj %}
                         <tr class="hover:bg-gray-100 cursor-pointer transition"
                             onclick="window.location.href='{% url 'article' article.id %}'">
+                            <!-- Tytuł jako link klikalny po całym rzędzie -->
                             <td class="px-3 py-4 text-sm font-medium text-blue-700 hover:underline">
                                 {{ article.title }}
                             </td>
+                            <!-- Data utworzenia -->
                             <td class="px-3 py-4 text-sm text-gray-500">
                                 {{ article.created_at|date:"Y-m-d H:i" }}
                             </td>
+                            <!-- Liczba lajków -->
                             <td class="px-3 py-4 text-sm text-gray-500">
                                 {{ article.like_count }}
                             </td>
+                            <!-- Liczba komentarzy -->
                             <td class="px-3 py-4 text-sm text-gray-500">
                                 {{ article.comment_count }}
                             </td>
+                            <!-- Linki do edycji i usunięcia -->
                             <td class="px-3 py-4 text-sm text-right text-gray-500 space-x-2">
                                 <a href="{% url 'edit_article' article.id %}" class="text-blue-600 hover:text-blue-800">
                                     Edytuj
@@ -89,6 +100,7 @@
                             </td>
                         </tr>
                     {% empty %}
+                        <!-- Gdy użytkownik nie ma jeszcze artykułów -->
                         <tr>
                             <td colspan="5" class="px-3 py-4 text-center text-gray-500">
                                 Brak artykułów.
@@ -98,17 +110,22 @@
                     </tbody>
                 </table>
 
-                <!-- Paginacja -->
+                <!-- Sekcja paginacji -->
                 <div class="mt-6 flex justify-between items-center">
+                    <!-- Link do poprzedniej strony -->
                     {% if page_obj.has_previous %}
                         <a href="?page={{ page_obj.previous_page_number }}&sort={{ sort }}&dir={{ dir }}"
                            class="text-sm text-blue-600 hover:underline">Poprzednia</a>
                     {% else %}
                         <span></span>
                     {% endif %}
+
+                    <!-- Informacja o aktualnej stronie -->
                     <span class="text-sm text-gray-600">
                         Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}
                     </span>
+
+                    <!-- Link do następnej strony -->
                     {% if page_obj.has_next %}
                         <a href="?page={{ page_obj.next_page_number }}&sort={{ sort }}&dir={{ dir }}"
                            class="text-sm text-blue-600 hover:underline">Następna</a>
