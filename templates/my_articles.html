@@ -1,0 +1,128 @@
+
+{% extends 'basic_template.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-span-2 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto">
+            <h1 class="text-base font-semibold text-gray-900">Twoje artykuły</h1>
+            <p class="mt-2 text-sm text-gray-700">Lista artykułów stworzonych przez Ciebie.</p>
+        </div>
+        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <a href="{% url 'add_article' %}"
+               class="block rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500">
+                Dodaj artykuł
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-8 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead>
+                    <tr>
+                        <!-- Tytuł -->
+                        <th class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">
+                            <a href="?sort=title&dir={% if sort == 'title' and dir == 'asc' %}desc{% else %}asc{% endif %}"
+                               class="inline-flex items-center gap-1 hover:underline">
+                                Tytuł
+                                {% if sort == 'title' %}
+                                    {% if dir == 'asc' %}
+                                        <span>↑</span>
+                                    {% else %}
+                                        <span>↓</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-gray-300">↑</span>
+                                {% endif %}
+                            </a>
+                        </th>
+
+                        <!-- Data -->
+                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            <a href="?sort=created_at&dir={% if sort == 'created_at' and dir == 'asc' %}desc{% else %}asc{% endif %}"
+                               class="inline-flex items-center gap-1 hover:underline">
+                                Data
+                                {% if sort == 'created_at' %}
+                                    {% if dir == 'asc' %}
+                                        <span>↑</span>
+                                    {% else %}
+                                        <span>↓</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-gray-300">↑</span>
+                                {% endif %}
+                            </a>
+                        </th>
+
+                        <!-- Pozostałe -->
+                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Lajki</th>
+                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Komentarze</th>
+                        <th class="py-3.5 px-3 text-right text-sm font-semibold text-gray-900">Akcje</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for article in page_obj %}
+                        <tr class="hover:bg-gray-100 cursor-pointer transition"
+                            onclick="window.location.href='{% url 'article' article.id %}'">
+                            <td class="px-3 py-4 text-sm font-medium text-blue-700 hover:underline">
+                                {{ article.title }}
+                            </td>
+                            <td class="px-3 py-4 text-sm text-gray-500">
+                                {{ article.created_at|date:"Y-m-d H:i" }}
+                            </td>
+                            <td class="px-3 py-4 text-sm text-gray-500">
+                                {{ article.like_count }}
+                            </td>
+                            <td class="px-3 py-4 text-sm text-gray-500">
+                                {{ article.comment_count }}
+                            </td>
+                            <td class="px-3 py-4 text-sm text-right text-gray-500 space-x-2">
+                                <a href="{% url 'edit_article' article.id %}" class="text-blue-600 hover:text-blue-800">
+                                    Edytuj
+                                </a>
+                                <a href="{% url 'delete_article' article.id %}" class="text-red-600 hover:text-red-800">
+                                    Usuń
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-3 py-4 text-center text-gray-500">
+                                Brak artykułów.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Paginacja -->
+                <div class="mt-6 flex justify-between items-center">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}&sort={{ sort }}&dir={{ dir }}"
+                           class="text-sm text-blue-600 hover:underline">Poprzednia</a>
+                    {% else %}
+                        <span></span>
+                    {% endif %}
+                    <span class="text-sm text-gray-600">
+                        Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}
+                    </span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}&sort={{ sort }}&dir={{ dir }}"
+                           class="text-sm text-blue-600 hover:underline">Następna</a>
+                    {% else %}
+                        <span></span>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include "common/_sidebar.html" %}
+{% endblock %}

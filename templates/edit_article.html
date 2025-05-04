@@ -1,0 +1,81 @@
+{% extends 'basic_template.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Feed -->
+    <section class="lg:col-span-2 space-y-6">
+        <!-- Post -->
+        <div class="w-full bg-white p-6 rounded-lg shadow space-y-6">
+
+            <!-- Nagłówek -->
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-800">Edytuj artykuł</h2>
+                <p class="text-sm text-gray-500">Zaktualizuj treść artykułu poniżej.</p>
+            </div>
+
+            <!-- Formularz -->
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Tytuł -->
+                <div>
+                    <label for="{{ form.title.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700">Tytuł</label>
+                    {{ form.title }}
+                </div>
+
+                <!-- Treść -->
+                <div>
+                    <label for="{{ form.content.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700">Treść</label>
+                    {{ form.content }}
+                </div>
+
+                <!-- Plik -->
+                <div>
+                    <label for="{{ form.file.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Plik (opcjonalnie)
+                    </label>
+                    {{ form.file }}
+
+                    {% if article.file %}
+                        <p class="mt-1 text-sm text-gray-500">Aktualny plik:
+                            <a href="{{ article.file.url }}" target="_blank" class="text-blue-600 hover:underline">
+                                {{ article.file.name|cut:"media/" }}
+                            </a>
+                        </p>
+                    {% endif %}
+                </div>
+
+                <!-- Obrazek -->
+                <div>
+                    <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Obrazek (opcjonalnie)
+                    </label>
+                    {{ form.image }}
+
+                    {% if article.image %}
+                        <div class="mt-2">
+                            <img src="{{ article.image.url }}" alt="Podgląd obrazka" class="max-h-48 rounded-md">
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Przycisk -->
+                <div class="flex items-center justify-between gap-4">
+                    <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-md py-2 px-4 text-sm">
+                        Zapisz zmiany
+                    </button>
+
+                    <a href="{% url 'home' %}"
+                       class="text-sm text-gray-600 hover:text-blue-600 hover:underline">Anuluj</a>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
+{% block sidebar %}
+    {% include "common/_sidebar.html" %}
+{% endblock %}

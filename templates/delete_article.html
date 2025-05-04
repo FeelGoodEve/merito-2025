@@ -1,0 +1,41 @@
+{% extends 'basic_template.html' %}
+{% load static %}
+
+{% block content %}
+    <section class="lg:col-span-2 space-y-6">
+        <div class="w-full bg-white p-6 rounded-lg shadow space-y-6">
+
+            <!-- Nagłówek -->
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-red-600">Usuń artykuł</h2>
+                <p class="text-sm text-gray-500 mt-2">Czy na pewno chcesz usunąć ten artykuł? Tej operacji nie można cofnąć.</p>
+            </div>
+
+            <!-- Szczegóły artykułu -->
+            <div class="bg-gray-100 p-4 rounded-md text-gray-800">
+                <h3 class="text-xl font-semibold mb-2">{{ article.title }}</h3>
+                <p class="text-sm text-gray-600">{{ article.content|truncatewords:30 }}</p>
+
+                {% if article.image %}
+                    <div class="mt-4">
+                        <img src="{{ article.image.url }}" alt="Obrazek artykułu" class="max-h-48 rounded-md">
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Formularz potwierdzenia -->
+            <form method="post" class="flex justify-between items-center mt-6">
+                {% csrf_token %}
+                <button type="submit"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md py-2 px-4 text-sm">
+                    Tak, usuń
+                </button>
+                <a href="{% url 'home' %}" class="text-sm text-gray-600 hover:underline">Anuluj</a>
+            </form>
+        </div>
+    </section>
+{% endblock %}
+
+{% block sidebar %}
+    {% include "common/_sidebar.html" %}
+{% endblock %}
