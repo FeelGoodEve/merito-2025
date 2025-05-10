@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import render, get_object_or_404, redirect
@@ -10,6 +11,7 @@ from app_scinet.forms.CommentForm import CommentForm
 from app_scinet.forms.UserProfileFrom import UserProfileForm
 from app_scinet.models import Article, Interaction
 from app_scinet.forms import CustomUserRegistrationForm
+from app_scinet.models.FriendshipModel import FriendshipModel
 from app_scinet.models.UserProfileModel import UserProfile
 
 
@@ -304,3 +306,101 @@ def profile_view(request):
         'user': user,
         'profile': profile,
     })
+
+@login_required
+def user_profile_view(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    # Zabezpieczenie, żeby nie oglądać swojego profilu w tym widoku
+    if user == request.user:
+        return redirect('profile')
+
+    profile = get_object_or_404(UserProfile, user=user)
+
+    friendship = FriendshipModel.objects.filter(
+        Q(user=request.user, friend=user) | Q(user=user, friend=request.user)
+    ).first()
+
+    context = {
+        'profile_user': user,
+        'profile': profile,
+        'friendship_status': friendship.status if friendship else None,
+    }
+
+    return render(request, 'user_profile.html', context)
+
+@login_required
+def send_friend_request(request, user_id):
+    friend = get_object_or_404(User, id=user_id)
+
+    # Sprawdzenie czy nie wysyłamy zaproszenia do samego siebie
+    if friend == request.user:
+        messages.error(request, "Nie możesz wysłać zaproszenia do samego siebie.")
+        return redirect('user_profile_view', user_id=friend.id)
+
+    # Sprawdzenie czy zaproszenie już istnieje
+    friendship, created = FriendshipModel.objects.get_or_create(
+        user=request.user,
+        friend=friend,
+        defaults={'status': 'pending'}
+    )
+
+    if created:
+        messages.success(request, f"Wysłano zaproszenie do {friend.username}")
+    else:
+        messages.info(request, f"Zaproszenie do {friend.username} już istnieje")
+
+    return redirect('user_profile_view', user_id=friend.id)
+
+
+@login_required
+def accept_friend_request(request, request_id):
+    friendship = get_object_or_404(
+        FriendshipModel,
+        id=request_id,
+        friend=request.user,
+        status='pending'
+    )
+    friendship.status = 'accepted'
+    friendship.save()
+    messages.success(request, f"Zaakceptowano zaproszenie od {friendship.user.username}")
+    return redirect('user_profile_view', user_id=friendship.user.id)
+
+
+@login_required
+def decline_friend_request(request, request_id):
+    friendship = get_object_or_404(
+        FriendshipModel,
+        id=request_id,
+        friend=request.user,
+        status='pending'
+    )
+    friendship.status = 'declined'
+    friendship.save()
+    messages.info(request, f"Odrzucono zaproszenie od {friendship.user.username}")
+    return redirect('user_profile_view', user_id=friendship.user.id)
+
+
+@login_required
+def friends_list(request):
+    # Pobranie zaakceptowanych znajomych
+    friends = User.objects.filter(
+        Q(friend_requests_received__user=request.user,
+          friend_requests_received__status='accepted') |
+        Q(friend_requests_sent__friend=request.user,
+          friend_requests_sent__status='accepted')
+    ).distinct()
+
+    # Pobranie sugerowanych użytkowników (wszyscy użytkownicy oprócz znajomych i obecnego użytkownika)
+    suggested_users = User.objects.exclude(
+        id__in=[friend.id for friend in friends]
+    ).exclude(
+        id=request.user.id
+    )[:5]  # limitujemy do 5 sugestii
+
+    context = {
+        'friends': friends,
+        'suggested_users': suggested_users,
+    }
+
+    return render(request, 'friends_list.html', context)
