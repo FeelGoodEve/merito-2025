@@ -16,8 +16,7 @@ def download_article_file(request, article_id):
         raise Http404("Brak pliku do pobrania.")
 
     file_path = article.file.path
-
-    if not os.path.exists(file_path):
-        raise Http404("Plik nie istnieje.")
-
-    return FileResponse(open(file_path, 'rb'), as_attachment=True)
+    if os.path.exists(file_path):
+        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=os.path.basename(file_path))
+    else:
+        raise Http404("Plik nie został znaleziony")
